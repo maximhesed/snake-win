@@ -6,7 +6,7 @@
 #include <conio.h>
 
 #define WIN_SIZE_X 60
-#define WIN_SIZE_Y 36
+#define WIN_SIZE_Y 28
 #define WIN_POS_X 300
 #define WIN_POS_Y 150
 

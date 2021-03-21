@@ -13,6 +13,6 @@
 
 void score_draw(int x, int y, struct snake *s);
 void score_add(int v, struct snake *s);
-void score_add_draw(struct food *f);
+void score_add_draw(struct food *f, int yfset);
 
 #endif /* SCORE_H */

@@ -65,14 +65,14 @@ menu_alloc(void)
 void
 menu_add_item(struct menu *m, const char *name, menu_cb cb, void *data)
 {
-	struct item *item = malloc(sizeof(struct item));
+	struct item item;
 	
-	strcpy(item->name, name);
-	item->indent = 0;
-	item->cb = cb;
-	item->data = data;
+	strcpy(item.name, name);
+	item.indent = 0;
+	item.cb = cb;
+	item.data = data;
 	
-	list_append(m->items, item);
+	list_appenda(m->items, sizeof(struct item), &item);
 }
 
 void
@@ -85,7 +85,7 @@ menu_draw(const struct menu *m)
 			cursor_draw(m);
 		
 		SetConsoleCursorPosition(h, (COORD) {getmposx(m) + item->indent, getmposy(m) + i});
-		printf("%s", item->name);
+		printf(item->name);
 	}
 }
 

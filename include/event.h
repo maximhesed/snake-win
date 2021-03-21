@@ -10,14 +10,11 @@
 #include "food.h"
 #include "snake.h"
 #include "game_ctx.h"
-
-#define EVT_WELCOME_X (WIN_SIZE_X / 2 - 13)
-#define EVT_WELCOME_Y (WIN_SIZE_Y / 2 - 1)
-#define EVT_END_X (WIN_SIZE_X / 2 - 4)
-#define EVT_END_Y (WIN_SIZE_Y / 2)
+#include "reqs.h"
 
 void evt_menu(struct menu *m);
-void evt_pause(struct menu *m);
-void evt_gameover(void);
+int evt_pause(struct game_ctx *ctx, int yfset);
+void evt_win(int yfset);
+void evt_lose(int yfset);
 
 #endif /* EVENT_H */

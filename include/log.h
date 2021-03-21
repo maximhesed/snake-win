@@ -1,6 +1,8 @@
 #ifndef LOG_H
 #define LOG_H
 
-FILE *file_log;
+#include <stdio.h>
+
+FILE *fileLog;
 
 #endif /* LOG_H */

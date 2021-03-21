@@ -36,7 +36,7 @@ unit_draw(const struct unit *u)
 }
 
 void
-unit_refresh_dir(struct unit *u, int key)
+unit_update_dir(struct unit *u, int key)
 {
 	switch (key) {
 		case KEY_LEFT:
@@ -63,13 +63,6 @@ unit_refresh_dir(struct unit *u, int key)
 		
 			break;	
 	}
-}
-
-bool
-unit_check_board(const struct unit *u)
-{
-	return (u->pos.X == BOARD_LEFT) || (u->pos.X == BOARD_RIGHT) 
-		|| (u->pos.Y == BOARD_TOP) || (u->pos.Y == BOARD_BOTTOM);
 }
 
 void
@@ -105,10 +98,4 @@ unit_bend(struct unit *u2, const struct unit *u1)
 		u2->dir = u1->dir;
 		u2->prev = u1->prev;
 	}
-}
-
-void
-unit_free(struct unit *u)
-{
-	free(u);	
 }

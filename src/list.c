@@ -1,5 +1,40 @@
 #include "list.h"
 
+static struct list * get_last_node(struct list *list);
+static void _append(struct list *list, void *data);
+
+static struct list *
+get_last_node(struct list *list)
+{
+	if (list == NULL)
+		return NULL;
+	
+	while (list->next != NULL)
+		list = list->next;
+	
+	return list;	
+}
+
+static void
+_append(struct list *list, void *data)
+{
+	struct list *last;
+	
+	last = get_last_node(list);
+	if (last == NULL)
+		return;
+	
+	if (!list_empty(last)) {
+		last->next = list_alloc();
+		
+		last->next->id = last->id + 1;
+		
+		last = last->next;	
+	}
+	
+	last->data = data;
+}
+
 struct list *
 list_alloc(void)
 {
@@ -15,31 +50,29 @@ list_alloc(void)
 void
 list_append(struct list *list, void *data)
 {
-	if (list_empty(list)) {
-		list->data = data;
-		
-		return;
-	}
+	_append(list, data);	
+}
+
+void
+list_appenda(struct list *list, int size, const void *data)
+{
+	void *data_copy = malloc(size);
 	
-	while (list->next != NULL)
-		list = list->next;
-	
-	list->next = list_alloc();
-	
-	list->next->id = list->id + 1;
-	list->next->data = data;
+	memcpy(data_copy, data, size);
+
+	_append(list, data_copy);
 }
 
 bool
 list_empty(const struct list *list)
 {
-	return list == NULL || list->data == NULL;
+	return list->data == NULL;
 }
 
-int 
+int
 list_count(const struct list *list)
 {
-	if (list == NULL)
+	if (list == NULL || list_empty(list))
 		return 0;
 	
 	while (list->next != NULL)
@@ -61,11 +94,17 @@ list_nth_data(const struct list *list, int n)
 	return NULL;
 }
 
+void * 
+list_nth_data_rand(const struct list *list)
+{
+	return list_nth_data(list, random(0, list_count(list) - 1));	
+}
+
 void
 list_print(const struct list *list)
 {
 	while (list != NULL) {
-		printf("%d: %p\n", list->id, list->data);
+		printf("%p {%d, %p, %p}\n", (void *) list, list->id, list->data, (void *) list->next);
 		
 		list = list->next;
 	}
@@ -74,13 +113,15 @@ list_print(const struct list *list)
 void
 list_free(struct list *list, cleaner_t cleaner)
 {
-	struct list *tmp = NULL;
+	struct list *tmp;
 	
 	while (list != NULL) {
-		tmp = list, list = tmp->next;
+		tmp = list, list = list->next;
 		
 		if (cleaner != NULL)
 			cleaner(tmp->data);
+		else
+			free(tmp->data);
 	
 		free(tmp);
 	}

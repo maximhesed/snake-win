@@ -1,28 +1,5 @@
 #include "food.h"
 
-static const char food_sym[] = {
-	'*',
-	'$'
-};
-
-static const int food_score[] = {
-	5,
-	10,
-	25,
-	100,
-	250,
-	500,
-	1000
-};
-
-static const int food_color[] = {
-	FG_LIGHTGREEN,
-	FG_LIGHTCYAN,
-	FG_LIGHTRED,
-	FG_LIGHTMAGENTA,
-	FG_YELLOW
-};
-
 struct food *
 food_alloc(void)
 {
@@ -32,18 +9,24 @@ food_alloc(void)
 void
 food_draw(struct food *f)
 {
-	if (f->score == food_score[6])
-		f->color = food_color[random(0, 4)];
-
 	SetConsoleCursorPosition(h, f->pos);
 	SetConsoleTextAttribute(h, f->color | 0);
 	printf("%c", f->sym);
 	SetConsoleTextAttribute(h, FG_LIGHTGRAY | 0);
 }
 
-/* TODO: Create generation table. */
 void
-food_gen(struct food *f, const struct snake *s)
+food_draw_super(struct food *f, struct food_ctx *fc)
+{
+	if (f->score == 1000) {
+		f->color = *(int *) list_nth_data_rand(fc->colors);
+		
+		food_draw(f);	
+	}
+}
+
+void
+food_gen(struct food *f, struct food_ctx *fc, const struct snake *s)
 {
 	struct list *vcrds = list_alloc();
 	
@@ -56,20 +39,15 @@ food_gen(struct food *f, const struct snake *s)
 					isEmpty = false;
 			}
 			
-			if (isEmpty) {
-				COORD *crd = malloc(sizeof(COORD));
-				
-				*crd = (COORD) {x, y};
-				
-				list_append(vcrds, crd);
-			}
+			if (isEmpty)
+				list_appenda(vcrds, sizeof(COORD), &(COORD) {x, y});
 		}
 	}
 
-	f->pos = *(COORD *) list_nth_data(vcrds, random(0, BOARD_SIZE_X_DELTA * BOARD_SIZE_Y_DELTA - 1));
-	f->sym = food_sym[random(0, 1)];
-	f->color = food_color[random(0, 4)];
-	f->score = food_score[random(0, 6)];
+	f->pos = *(COORD *) list_nth_data(vcrds, random(0, list_count(vcrds) - 1));
+	f->sym = *(const char *) list_nth_data_rand(fc->syms);
+	f->color = *(int *) list_nth_data_rand(fc->colors);
+	f->score = *(int *) list_nth_data_rand(fc->scores);
 	
 	list_free(vcrds, NULL);
 }
